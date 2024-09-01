@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>R on My New Hugo Site</title>
-    <link>http://example.org/categories/r/</link>
+    <link>https://ethanjasny.github.io/categories/r/</link>
     <description>Recent content in R on My New Hugo Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 01 Dec 2020 21:13:14 -0500</lastBuildDate><atom:link href="http://example.org/categories/r/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 01 Dec 2020 21:13:14 -0500</lastBuildDate><atom:link href="https://ethanjasny.github.io/categories/r/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Hello R Markdown</title>
-      <link>http://example.org/post/2020-12-01-r-rmarkdown/</link>
+      <link>https://ethanjasny.github.io/post/2020-12-01-r-rmarkdown/</link>
       <pubDate>Tue, 01 Dec 2020 21:13:14 -0500</pubDate>
       
-      <guid>http://example.org/post/2020-12-01-r-rmarkdown/</guid>
+      <guid>https://ethanjasny.github.io/post/2020-12-01-r-rmarkdown/</guid>
       <description>R Markdown Hello I did a good job.
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
 You can embed an R code chunk like this:

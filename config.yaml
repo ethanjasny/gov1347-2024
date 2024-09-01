@@ -1,4 +1,4 @@
 theme: tale-hugo
-baseURL: http://example.org/
+baseURL: https://ethanjasny.github.io/
 languageCode: en-us
 title: My New Hugo Site
