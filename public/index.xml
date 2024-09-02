@@ -6,8 +6,15 @@
     <description>Recent content in Home on A minimal Hugo website</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 01 Dec 2020 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Sun, 01 Sep 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:5076/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Fun Time Foods</title>
+      <link>http://localhost:5076/post/2024/09/01/fun-time-foods/</link>
+      <pubDate>Sun, 01 Sep 2024 00:00:00 +0000</pubDate>
+      <guid>http://localhost:5076/post/2024/09/01/fun-time-foods/</guid>
+      <description>This is coolio&#xA;hist(rnorm(100)) </description>
+    </item>
     <item>
       <title>Hello R Markdown</title>
       <link>http://localhost:5076/post/2020/12/01/hello-r-markdown/</link>
