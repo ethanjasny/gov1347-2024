@@ -38,7 +38,7 @@ pv2p_map <- plot_geo(state_data, locationmode = "USA-states") %>%
   add_trace(z = ~D_pv2p, locations = ~Abbreviation,
             color = ~D_pv2p, colors = "RdBu", frame = ~year, # The raceYear frame creates an animation based on year
             showscale = TRUE, zmin = 0, zmax = 100) %>% # Define color scale min and max
-  layout(title = "US House GOP Two-Party Vote Share by State, 1948-2020", geo = map_layout)
+  layout(title = "Presidential Two-Party Vote Share by State, 1948-2020", geo = map_layout)
 (pv2p_map)
 # Swing 
 state_data$D_swing <- state_data$D_pv2p - state_data$D_pv2p_lag1
@@ -46,7 +46,7 @@ swing_map <- plot_geo(state_data, locationmode = "USA-states") %>%
   add_trace(z = ~D_swing, locations = ~Abbreviation,
             color = ~D_swing, colors = "RdBu", frame = ~year, # The raceYear frame creates an animation based on year
             showscale = TRUE, zmin = -30, zmax = 30) %>% # Define color scale min and max
-  layout(title = "US House GOP Two-Party Vote Share by State, 1948-2020", geo = map_layout)
+  layout(title = "Presidential Two-Party Swing by State, 1952-2020", geo = map_layout)
 (swing_map)
 ```
  
