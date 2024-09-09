@@ -6,8 +6,15 @@
     <description>Recent content in Posts on A minimal Hugo website</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 01 Dec 2020 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Sun, 01 Sep 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://example.org/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Example Blog Post</title>
+      <link>https://example.org/post/2024/09/01/fun-time-foods/</link>
+      <pubDate>Sun, 01 Sep 2024 00:00:00 +0000</pubDate>
+      <guid>https://example.org/post/2024/09/01/fun-time-foods/</guid>
+      <description>ETHAN abbrevs &amp;lt;- read.csv(&amp;quot;states.csv&amp;quot;) state_data &amp;lt;- read.csv(&amp;quot;clean_wide_state_2pv_1948_2020 (1).csv&amp;quot;) %&amp;gt;% rename(&amp;quot;State&amp;quot; = state) %&amp;gt;% full_join(abbrevs, by = &amp;quot;State&amp;quot;) # Define map layout map_layout &amp;lt;- list( scope = &#39;usa&#39;, projection = list(type = &#39;albers usa&#39;), lakecolor = toRGB(&#39;white&#39;), showlakes = FALSE) # Create Voteshare Map pv2p_map &amp;lt;- plot_geo(state_data, locationmode = &amp;quot;USA-states&amp;quot;) %&amp;gt;% add_trace(z = ~D_pv2p, locations = ~Abbreviation, color = ~D_pv2p, colors = &amp;quot;RdBu&amp;quot;, frame = ~year, # The raceYear frame creates an animation based on year showscale = TRUE, zmin = 0, zmax = 100) %&amp;gt;% # Define color scale min and max layout(title = &amp;quot;US House GOP Two-Party Vote Share by State, 1948-2020&amp;quot;, geo = map_layout) # Swing state_data$D_swing &amp;lt;- state_data$D_pv2p - state_data$D_pv2p_lag1 swing_map &amp;lt;- plot_geo(state_data, locationmode = &amp;quot;USA-states&amp;quot;) %&amp;gt;% add_trace(z = ~D_swing, locations = ~Abbreviation, color = ~D_swing, colors = &amp;quot;RdBu&amp;quot;, frame = ~year, # The raceYear frame creates an animation based on year showscale = TRUE, zmin = -30, zmax = 30) %&amp;gt;% # Define color scale min and max layout(title = &amp;quot;US House GOP Two-Party Vote Share by State, 1948-2020&amp;quot;, geo = map_layout) YUSUF popvote_df &amp;lt;- read_csv(&amp;quot;house party vote share by district 1948-2020.</description>
+    </item>
     <item>
       <title>Hello R Markdown</title>
       <link>https://example.org/post/2020/12/01/hello-r-markdown/</link>

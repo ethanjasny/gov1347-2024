@@ -1,15 +1,278 @@
 ---
-title: Fun Time Foods
-author: Package Build
+title: Example Blog Post
+author: Ethan and Yusuf
 date: '2024-09-01'
 slug: fun-time-foods
 categories: []
 tags: []
 ---
- 
- This is coolio
- 
-```{r}
-hist(rnorm(100))
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(tidyverse)
+#### want a state-level analysis
+library(readr)
+library(plotly)
+
 ```
+
+## ETHAN
+
+```{r vote share for all years}
+abbrevs <- read.csv("states.csv")
+state_data <- read.csv("clean_wide_state_2pv_1948_2020 (1).csv") %>% 
+  rename("State" = state) %>%
+  full_join(abbrevs, by = "State")
+
+
+# Define map layout 
+map_layout <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  lakecolor = toRGB('white'),
+  showlakes = FALSE)
+
+# Create Voteshare Map
+pv2p_map <- plot_geo(state_data, locationmode = "USA-states") %>% 
+  add_trace(z = ~D_pv2p, locations = ~Abbreviation,
+            color = ~D_pv2p, colors = "RdBu", frame = ~year, # The raceYear frame creates an animation based on year
+            showscale = TRUE, zmin = 0, zmax = 100) %>% # Define color scale min and max
+  layout(title = "US House GOP Two-Party Vote Share by State, 1948-2020", geo = map_layout)
+
+# Swing 
+state_data$D_swing <- state_data$D_pv2p - state_data$D_pv2p_lag1
+swing_map <- plot_geo(state_data, locationmode = "USA-states") %>% 
+  add_trace(z = ~D_swing, locations = ~Abbreviation,
+            color = ~D_swing, colors = "RdBu", frame = ~year, # The raceYear frame creates an animation based on year
+            showscale = TRUE, zmin = -30, zmax = 30) %>% # Define color scale min and max
+  layout(title = "US House GOP Two-Party Vote Share by State, 1948-2020", geo = map_layout)
+
+```
+ 
+## YUSUF
+ 
+
+```{r}
+
+popvote_df <- read_csv("house party vote share by district 1948-2020.csv")
+house_party_vote_share_by_district_1948_2020 <- read_csv("house party vote share by district 1948-2020.csv")
+h <- house_party_vote_share_by_district_1948_2020
+president_2020 <- read.csv("2020_presidential_district.csv")
+```
+
+```{r}
+h <- h %>% 
+  filter(raceYear=="2020")
+president_data <- president_2020 %>% 
+  filter(X2020!="Biden") %>% 
+  rename(CD=X)
+president_data <- left_join (president_data,h,by="CD")
+president_data <- president_data %>% 
+  select(X2020,X.3,State,district_num,raceYear)
+```
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE, eval=TRUE}
+
+
+# start with 114th congress - 2014 election
+# required packages 
+require(tidyverse)
+require(ggplot2)
+require(sf)
+library(plotly)
+
+# load geographic data
+get_congress_map <- function(cong=117) {
+  tmp_file <- tempfile()
+  tmp_dir  <- tempdir()
+  zp <- sprintf("https://cdmaps.polisci.ucla.edu/shp/districts114.zip",cong)
+  download.file(zp, tmp_file)
+  unzip(zipfile = tmp_file, exdir = tmp_dir)
+  fpath <- paste(tmp_dir, sprintf("districtShapes/districts114.shp",cong), sep = "/")
+  st_read(fpath, quiet=TRUE)
+}
+
+# load 114th congress
+cd117 <- get_congress_map(117)
+
+# select specific state 
+cd117_mi <- cd117 %>% 
+            filter(STATENAME=="Michigan") %>%
+            mutate(DISTRICT = as.character(DISTRICT))%>%
+            select(DISTRICT)
+
+```
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE, eval=TRUE}
+h <- president_data
+
+# filter for 2014 election and state
+R_mi_2020 <- h %>%
+    filter(raceYear == 2020, State == "Michigan") %>%
+    select(raceYear, State, district_num, X.3, X2020) %>%
+  # summarize party vote share by district
+    group_by(district_num) %>%
+    summarise(Trump_margin = as.numeric(X.3)-as.numeric(X2020)) %>%
+  # rename district variable name to match shapefile
+    rename(DISTRICT = district_num)
+
+
+# change class
+cd117_mi$DISTRICT <- as.numeric(cd117_mi$DISTRICT)
+
+# join election returns with shapefiles
+cd117_mi <- cd117_mi %>% left_join(R_mi_2020, by="DISTRICT")
+
+micities <- data.frame(city = c("Ann Arbor", 
+    "Detroit"), longitude = c(-83.7430, -83.0458), latitude=c(42.2808, 42.3314))
+
+suppressPlotlyMessage <- function(p) {
+  suppressMessages(plotly_build(p))
+}
+# time to map!
+mimap <- ggplot() + 
+  geom_sf(data=cd117_mi,aes(fill=Trump_margin),
+          inherit.aes=FALSE,alpha=0.9) + 
+  geom_point(data = micities, aes(x = longitude, y = latitude), size = 2.5, shape = c(19,21), fill = c("blue", "darkred"))+
+  scale_fill_gradient2(high="red",low="blue", mid="white") +
+  theme_void() + ggtitle ("Donald Trump Vote Share in 2020 MI Presidential Elections")
+  
+mimap
+#fig <- suppressPlotlyMessage(ggplotly(mimap))
+#fig
+```
+
+
+
+
+```{r}
+cd117_pa <- cd117 %>% 
+            filter(STATENAME=="Pennsylvania") %>%
+            mutate(DISTRICT = as.character(DISTRICT))%>%
+            select(DISTRICT)
+
+# add data to plot - 2014 GOP party seat share
+# reload election data - h from previous exercise
+h <- president_data
+
+# filter for 2014 election and state
+R_pa_2020 <- h %>%
+    filter(raceYear == 2020, State == "Pennsylvania") %>%
+    select(raceYear, State, district_num, X.3, X2020) %>%
+  # summarize party vote share by district
+    group_by(district_num) %>%
+    summarise(Trump_margin = as.numeric(X.3)-as.numeric(X2020)) %>%
+  # rename district variable name to match shapefile
+    rename(DISTRICT = district_num)
+
+
+# change class
+cd117_pa$DISTRICT <- as.numeric(cd117_pa$DISTRICT)
+
+# join election returns with shapefiles
+cd117_pa <- cd117_pa %>% left_join(R_pa_2020, by="DISTRICT")
+
+
+suppressPlotlyMessage <- function(p) {
+  suppressMessages(plotly_build(p))
+}
+# time to map!
+pamap <- ggplot() + 
+  geom_sf(data=cd117_pa,aes(fill=Trump_margin),
+          inherit.aes=FALSE,alpha=0.9) +
+  scale_fill_gradient2(high="red",mid="white",low="blue") +
+  theme_void() + ggtitle ("Donald Trump Vote Share in 2020 PA Presidential Elections")
+  
+#fig2 <- suppressPlotlyMessage(ggplotly(pamap))
+#fig2
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+cd117_wi <- cd117 %>% 
+            filter(STATENAME=="Wisconsin") %>%
+            mutate(DISTRICT = as.character(DISTRICT))%>%
+            select(DISTRICT)
+
+# add data to plot - 2014 GOP party seat share
+# reload election data - h from previous exercise
+h <- president_data
+
+# filter for 2014 election and state
+R_wi_2020 <- h %>%
+    filter(raceYear == 2020, State == "Wisconsin") %>%
+    select(raceYear, State, district_num, X.3, X2020) %>%
+  # summarize party vote share by district
+    group_by(district_num) %>%
+     summarise(Trump_margin = as.numeric(X.3)-as.numeric(X2020)) %>%
+  # rename district variable name to match shapefile
+    rename(DISTRICT = district_num)
+
+
+# change class
+cd117_wi$DISTRICT <- as.numeric(cd117_wi$DISTRICT)
+
+# join election returns with shapefiles
+cd117_wi <- cd117_wi %>% left_join(R_wi_2020, by="DISTRICT")
+
+
+suppressPlotlyMessage <- function(p) {
+  suppressMessages(plotly_build(p))
+}
+# time to map!
+wimap <- ggplot() + 
+  geom_sf(data=cd117_wi,aes(fill=Trump_margin),
+          inherit.aes=FALSE,alpha=0.9) +
+  scale_fill_gradient2(high="red",mid="white",low="blue") +
+  theme_void() + ggtitle ("Donald Trump Vote Share in 2020 WI Presidential Election")
+  
+#fig3 <- suppressPlotlyMessage(ggplotly(wimap))
+#fig3
+wimap
+```
+
+```{r}
+cd117_ga <- cd117 %>% 
+            filter(STATENAME=="Georgia") %>%
+            mutate(DISTRICT = as.character(DISTRICT))%>%
+            select(DISTRICT)
+
+# add data to plot - 2014 GOP party seat share
+# reload election data - h from previous exercise
+h <- president_data
+
+# filter for 2014 election and state
+R_ga_2020 <- h %>%
+    filter(raceYear == 2020, State == "Georgia") %>%
+    select(raceYear, State, district_num, X.3, X2020) %>%
+  # summarize party vote share by district
+    group_by(district_num) %>%
+    summarise(Trump_margin = as.numeric(X.3)-as.numeric(X2020)) %>%
+  # rename district variable name to match shapefile
+    rename(DISTRICT = district_num)
+
+
+# change class
+cd117_ga$DISTRICT <- as.numeric(cd117_ga$DISTRICT)
+
+# join election returns with shapefiles
+cd117_ga <- cd117_ga %>% left_join(R_ga_2020, by="DISTRICT")
+
+
+suppressPlotlyMessage <- function(p) {
+  suppressMessages(plotly_build(p))
+}
+# time to map!
+gamap <- ggplot() + 
+  geom_sf(data=cd117_ga,aes(fill=Trump_margin),
+          inherit.aes=FALSE,alpha=0.9) +
+  scale_fill_gradient2(high="red",mid="white",low="blue") +
+  theme_void() + ggtitle ("Donald Trump Vote Share in 2020 GA Presidential Election")
+  
+#fig4 <- suppressPlotlyMessage(ggplotly(gamap))
+#fig4
+gamap
+```
+
 

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=5076&amp;path=livereload" data-no-instant defer></script>
+  <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Fun Time Foods | A minimal Hugo website</title>
+    <title>Example Blog Post | A minimal Hugo website</title>
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/fonts.css" />
     
@@ -28,16 +28,204 @@
     </nav>
 
 <div class="article-meta">
-<h1><span class="title">Fun Time Foods</span></h1>
-<h2 class="author">Package Build</h2>
+<h1><span class="title">Example Blog Post</span></h1>
+<h2 class="author">Ethan and Yusuf</h2>
 <h2 class="date">2024/09/01</h2>
 </div>
 
 <main>
-<p>This is coolio</p>
-<pre><code class="language-r">hist(rnorm(100))
+<h2 id="ethan">ETHAN</h2>
+<pre><code class="language-r">abbrevs &lt;- read.csv(&quot;states.csv&quot;)
+state_data &lt;- read.csv(&quot;clean_wide_state_2pv_1948_2020 (1).csv&quot;) %&gt;% 
+  rename(&quot;State&quot; = state) %&gt;%
+  full_join(abbrevs, by = &quot;State&quot;)
+
+
+# Define map layout 
+map_layout &lt;- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  lakecolor = toRGB('white'),
+  showlakes = FALSE)
+
+# Create Voteshare Map
+pv2p_map &lt;- plot_geo(state_data, locationmode = &quot;USA-states&quot;) %&gt;% 
+  add_trace(z = ~D_pv2p, locations = ~Abbreviation,
+            color = ~D_pv2p, colors = &quot;RdBu&quot;, frame = ~year, # The raceYear frame creates an animation based on year
+            showscale = TRUE, zmin = 0, zmax = 100) %&gt;% # Define color scale min and max
+  layout(title = &quot;US House GOP Two-Party Vote Share by State, 1948-2020&quot;, geo = map_layout)
+
+# Swing 
+state_data$D_swing &lt;- state_data$D_pv2p - state_data$D_pv2p_lag1
+swing_map &lt;- plot_geo(state_data, locationmode = &quot;USA-states&quot;) %&gt;% 
+  add_trace(z = ~D_swing, locations = ~Abbreviation,
+            color = ~D_swing, colors = &quot;RdBu&quot;, frame = ~year, # The raceYear frame creates an animation based on year
+            showscale = TRUE, zmin = -30, zmax = 30) %&gt;% # Define color scale min and max
+  layout(title = &quot;US House GOP Two-Party Vote Share by State, 1948-2020&quot;, geo = map_layout)
 </code></pre>
-<img src="/post/2024/09/01/fun-time-foods/index_files/figure-html/unnamed-chunk-1-1.png" width="672" />
+<h2 id="yusuf">YUSUF</h2>
+<pre><code class="language-r">popvote_df &lt;- read_csv(&quot;house party vote share by district 1948-2020.csv&quot;)
+</code></pre>
+<pre><code>## Rows: 16067 Columns: 31
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (16): Office, State, Area, RepCandidate, RepStatus, DemCandidate, DemSta...
+## dbl (14): raceYear, RepVotes, DemVotes, ThirdVotes, OtherVotes, PluralityVot...
+## lgl  (1): CensusPop
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+</code></pre>
+<pre><code class="language-r">house_party_vote_share_by_district_1948_2020 &lt;- read_csv(&quot;house party vote share by district 1948-2020.csv&quot;)
+</code></pre>
+<pre><code>## Rows: 16067 Columns: 31
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (16): Office, State, Area, RepCandidate, RepStatus, DemCandidate, DemSta...
+## dbl (14): raceYear, RepVotes, DemVotes, ThirdVotes, OtherVotes, PluralityVot...
+## lgl  (1): CensusPop
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+</code></pre>
+<pre><code class="language-r">h &lt;- house_party_vote_share_by_district_1948_2020
+president_2020 &lt;- read.csv(&quot;2020_presidential_district.csv&quot;)
+</code></pre>
+<pre><code class="language-r">h &lt;- h %&gt;% 
+  filter(raceYear==&quot;2020&quot;)
+president_data &lt;- president_2020 %&gt;% 
+  filter(X2020!=&quot;Biden&quot;) %&gt;% 
+  rename(CD=X)
+president_data &lt;- left_join (president_data,h,by=&quot;CD&quot;)
+president_data &lt;- president_data %&gt;% 
+  select(X2020,X.3,State,district_num,raceYear)
+</code></pre>
+<img src="https://example.org/post/2024/09/01/fun-time-foods/index_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+<pre><code class="language-r">cd117_pa &lt;- cd117 %&gt;% 
+            filter(STATENAME==&quot;Pennsylvania&quot;) %&gt;%
+            mutate(DISTRICT = as.character(DISTRICT))%&gt;%
+            select(DISTRICT)
+
+# add data to plot - 2014 GOP party seat share
+# reload election data - h from previous exercise
+h &lt;- president_data
+
+# filter for 2014 election and state
+R_pa_2020 &lt;- h %&gt;%
+    filter(raceYear == 2020, State == &quot;Pennsylvania&quot;) %&gt;%
+    select(raceYear, State, district_num, X.3, X2020) %&gt;%
+  # summarize party vote share by district
+    group_by(district_num) %&gt;%
+    summarise(Trump_margin = as.numeric(X.3)-as.numeric(X2020)) %&gt;%
+  # rename district variable name to match shapefile
+    rename(DISTRICT = district_num)
+
+
+# change class
+cd117_pa$DISTRICT &lt;- as.numeric(cd117_pa$DISTRICT)
+
+# join election returns with shapefiles
+cd117_pa &lt;- cd117_pa %&gt;% left_join(R_pa_2020, by=&quot;DISTRICT&quot;)
+
+
+suppressPlotlyMessage &lt;- function(p) {
+  suppressMessages(plotly_build(p))
+}
+# time to map!
+pamap &lt;- ggplot() + 
+  geom_sf(data=cd117_pa,aes(fill=Trump_margin),
+          inherit.aes=FALSE,alpha=0.9) +
+  scale_fill_gradient2(high=&quot;red&quot;,mid=&quot;white&quot;,low=&quot;blue&quot;) +
+  theme_void() + ggtitle (&quot;Donald Trump Vote Share in 2020 PA Presidential Elections&quot;)
+  
+#fig2 &lt;- suppressPlotlyMessage(ggplotly(pamap))
+#fig2
+</code></pre>
+<p>Note that the <code>echo = FALSE</code> parameter was added to the code chunk to prevent printing of the R code that generated the plot.</p>
+<pre><code class="language-r">cd117_wi &lt;- cd117 %&gt;% 
+            filter(STATENAME==&quot;Wisconsin&quot;) %&gt;%
+            mutate(DISTRICT = as.character(DISTRICT))%&gt;%
+            select(DISTRICT)
+
+# add data to plot - 2014 GOP party seat share
+# reload election data - h from previous exercise
+h &lt;- president_data
+
+# filter for 2014 election and state
+R_wi_2020 &lt;- h %&gt;%
+    filter(raceYear == 2020, State == &quot;Wisconsin&quot;) %&gt;%
+    select(raceYear, State, district_num, X.3, X2020) %&gt;%
+  # summarize party vote share by district
+    group_by(district_num) %&gt;%
+     summarise(Trump_margin = as.numeric(X.3)-as.numeric(X2020)) %&gt;%
+  # rename district variable name to match shapefile
+    rename(DISTRICT = district_num)
+
+
+# change class
+cd117_wi$DISTRICT &lt;- as.numeric(cd117_wi$DISTRICT)
+
+# join election returns with shapefiles
+cd117_wi &lt;- cd117_wi %&gt;% left_join(R_wi_2020, by=&quot;DISTRICT&quot;)
+
+
+suppressPlotlyMessage &lt;- function(p) {
+  suppressMessages(plotly_build(p))
+}
+# time to map!
+wimap &lt;- ggplot() + 
+  geom_sf(data=cd117_wi,aes(fill=Trump_margin),
+          inherit.aes=FALSE,alpha=0.9) +
+  scale_fill_gradient2(high=&quot;red&quot;,mid=&quot;white&quot;,low=&quot;blue&quot;) +
+  theme_void() + ggtitle (&quot;Donald Trump Vote Share in 2020 WI Presidential Election&quot;)
+  
+#fig3 &lt;- suppressPlotlyMessage(ggplotly(wimap))
+#fig3
+wimap
+</code></pre>
+<img src="https://example.org/post/2024/09/01/fun-time-foods/index_files/figure-html/unnamed-chunk-6-1.png" width="672" />
+<pre><code class="language-r">cd117_ga &lt;- cd117 %&gt;% 
+            filter(STATENAME==&quot;Georgia&quot;) %&gt;%
+            mutate(DISTRICT = as.character(DISTRICT))%&gt;%
+            select(DISTRICT)
+
+# add data to plot - 2014 GOP party seat share
+# reload election data - h from previous exercise
+h &lt;- president_data
+
+# filter for 2014 election and state
+R_ga_2020 &lt;- h %&gt;%
+    filter(raceYear == 2020, State == &quot;Georgia&quot;) %&gt;%
+    select(raceYear, State, district_num, X.3, X2020) %&gt;%
+  # summarize party vote share by district
+    group_by(district_num) %&gt;%
+    summarise(Trump_margin = as.numeric(X.3)-as.numeric(X2020)) %&gt;%
+  # rename district variable name to match shapefile
+    rename(DISTRICT = district_num)
+
+
+# change class
+cd117_ga$DISTRICT &lt;- as.numeric(cd117_ga$DISTRICT)
+
+# join election returns with shapefiles
+cd117_ga &lt;- cd117_ga %&gt;% left_join(R_ga_2020, by=&quot;DISTRICT&quot;)
+
+
+suppressPlotlyMessage &lt;- function(p) {
+  suppressMessages(plotly_build(p))
+}
+# time to map!
+gamap &lt;- ggplot() + 
+  geom_sf(data=cd117_ga,aes(fill=Trump_margin),
+          inherit.aes=FALSE,alpha=0.9) +
+  scale_fill_gradient2(high=&quot;red&quot;,mid=&quot;white&quot;,low=&quot;blue&quot;) +
+  theme_void() + ggtitle (&quot;Donald Trump Vote Share in 2020 GA Presidential Election&quot;)
+  
+#fig4 &lt;- suppressPlotlyMessage(ggplotly(gamap))
+#fig4
+gamap
+</code></pre>
+<img src="https://example.org/post/2024/09/01/fun-time-foods/index_files/figure-html/unnamed-chunk-7-1.png" width="672" />
 
 </main>
 
