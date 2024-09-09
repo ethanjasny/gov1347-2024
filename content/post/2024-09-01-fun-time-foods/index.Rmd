@@ -8,7 +8,7 @@ tags: []
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 library(ggplot2)
 library(tidyverse)
 #### want a state-level analysis
@@ -19,7 +19,7 @@ library(plotly)
 
 ## ETHAN
 
-```{r vote share for all years}
+```{r vote share for all years, warning = FALSE}
 abbrevs <- read.csv("states.csv")
 state_data <- read.csv("clean_wide_state_2pv_1948_2020 (1).csv") %>% 
   rename("State" = state) %>%
@@ -39,7 +39,7 @@ pv2p_map <- plot_geo(state_data, locationmode = "USA-states") %>%
             color = ~D_pv2p, colors = "RdBu", frame = ~year, # The raceYear frame creates an animation based on year
             showscale = TRUE, zmin = 0, zmax = 100) %>% # Define color scale min and max
   layout(title = "US House GOP Two-Party Vote Share by State, 1948-2020", geo = map_layout)
-
+(pv2p_map)
 # Swing 
 state_data$D_swing <- state_data$D_pv2p - state_data$D_pv2p_lag1
 swing_map <- plot_geo(state_data, locationmode = "USA-states") %>% 
@@ -47,13 +47,13 @@ swing_map <- plot_geo(state_data, locationmode = "USA-states") %>%
             color = ~D_swing, colors = "RdBu", frame = ~year, # The raceYear frame creates an animation based on year
             showscale = TRUE, zmin = -30, zmax = 30) %>% # Define color scale min and max
   layout(title = "US House GOP Two-Party Vote Share by State, 1948-2020", geo = map_layout)
-
+(swing_map)
 ```
  
 ## YUSUF
  
 
-```{r}
+```{r, include = F}
 
 popvote_df <- read_csv("house party vote share by district 1948-2020.csv")
 house_party_vote_share_by_district_1948_2020 <- read_csv("house party vote share by district 1948-2020.csv")
@@ -61,7 +61,7 @@ h <- house_party_vote_share_by_district_1948_2020
 president_2020 <- read.csv("2020_presidential_district.csv")
 ```
 
-```{r}
+```{r, include = F}
 h <- h %>% 
   filter(raceYear=="2020")
 president_data <- president_2020 %>% 
@@ -188,7 +188,7 @@ pamap <- ggplot() +
 #fig2
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
 ```{r}
 cd117_wi <- cd117 %>% 
             filter(STATENAME=="Wisconsin") %>%
