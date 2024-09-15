@@ -1,5 +1,6 @@
 ---
 title: Example Blog Post
+subtitle: Link to home page
 author: Ethan and Yusuf
 date: '2024-09-01'
 slug: fun-time-foods
@@ -273,6 +274,39 @@ gamap <- ggplot() +
 #fig4 <- suppressPlotlyMessage(ggplotly(gamap))
 #fig4
 gamap
-```
 
+
+## Lag model
+
+lm.ar.2 <- lm(D_pv2p ~ D_pv2p_lag1 + D_pv2p_lag2, state_data)
+lm.state.fe <- lm(D_pv2p ~ State, state_data)
+
+AR <- data.frame(AR_D_pv2p = rep(NA, 51), State = rep(NA, 51))
+AR$AR_D_pv2p <- predict(lm.ar.2, newdata =   state_data %>% filter(year == 2020) %>% select(D_pv2p, D_pv2p_lag1) %>% rename("D_pv2p_lag1" = D_pv2p, "D_pv2p_lag2" = D_pv2p_lag1))
+
+AR$State <- (state_data %>% filter(year == 2020))$State 
+
+modelling.simple <- data.frame(
+  FE_D_pv2p = predict(lm.state.fe, newdata = data.frame(State = unique(state_data$State)[unique(state_data$State) != "District of Columbia"])),
+  State = unique(state_data$State)[unique(state_data$State) != "District of Columbia"]) %>%
+  full_join(AR, by = "State") %>%
+  full_join(abbrevs, by = "State") %>%
+  mutate(dem.win.AR = as.factor(ifelse(AR_D_pv2p >50,1,0)),
+         dem.win.FE = as.factor(ifelse(FE_D_pv2p > 50,1,0)))
+  
+color_scale <-list(
+  list(0, 'red'),
+  list(1, 'blue')
+)
+ar.map <- plot_geo(modelling.simple, locationmode = "USA-states") %>% 
+  add_trace(z = ~dem.win.FE, locations = ~Abbreviation,
+            color = ~dem.win.FE, colorscale = color_scale,
+            showscale = TRUE, zmin = 0, zmax = 1) %>% # Define color scale min and max
+  layout(title = "FE Model Prediction", geo = map_layout)
+
+ar.map
+```
+$$Y_{it}=\alpha+\beta_1 Y_{it-1}+\beta_2y_{it-2}+\epsilon_{it}$$
+
+$$Y_{it}=\alpha+\omega_i+\epsilon_{it}$$
 
